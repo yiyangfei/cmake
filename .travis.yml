@@ -49,6 +49,7 @@ before_install:
 install:
 # Clone examples: they are the code to test against.
   - git clone https://github.com/cmakespark/examples.git ${HOME}/examples
+  - env
   - export CMAKESPARK=${TRAVIS_BUILD_DIR}
   - mkdir /tmp/installed
 
