@@ -35,7 +35,7 @@ install:
 build_script:
 # Clone examples: they are the code to test against.
   - git clone https://github.com/cmakespark/examples.git examples
-  - set CMAKE_COMMON=C:/projects/cmake-common
+  - set CMAKESPARK=C:/projects/cmake-common
   - mkdir installed
 
 test_script:
