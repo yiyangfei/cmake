@@ -1,5 +1,7 @@
 # Add manifest: executables may require administrative privileges.
 
+set(MY_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 macro(add_manifest PROJECT TYPE)
 if(CMAKE_BUILD_TYPE MATCHES Release)
     if(WIN32 AND NOT UNIX)
@@ -11,10 +13,10 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
         if(MT_TOOL)
             # select type
             if(${TYPE} STREQUAL "LIB" OR ${TYPE} STREQUAL "QMLLIB")
-                set(MANIFEST_FILE_IN ${CMAKE_CURRENT_LIST_DIR}/dll.manifest.in)
+                set(MANIFEST_FILE_IN ${MY_DIR}/dll.manifest.in)
                 set(MANIFEST_FILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dll.manifest)
             elseif(${TYPE} STREQUAL "BIN")
-                set(MANIFEST_FILE_IN ${CMAKE_CURRENT_LIST_DIR}/exe.manifest.in)
+                set(MANIFEST_FILE_IN ${MY_DIR}/exe.manifest.in)
                 set(MANIFEST_FILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.exe.manifest)
             endif()
 
