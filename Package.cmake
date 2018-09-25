@@ -32,9 +32,18 @@ macro(add_to_archive NAME FILE)
             DEPENDS dummy-${NAME}.unexisting
             COMMENT "Creating ${NAME} archive: ${CMAKE_BINARY_DIR}/${NAME}.zip")
     endif()
-            
-    add_custom_command(OUTPUT dummy-${NAME}.unexisting
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FILE} archive-staging/${NAME}
+    
+    if(NOT IS_DIRECTORY ${FILE})
+        # Copy file
+        add_custom_command(OUTPUT dummy-${NAME}.unexisting
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FILE} archive-staging/${NAME}
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                APPEND)
+    else()
+        # Copy directory
+        add_custom_command(OUTPUT dummy-${NAME}.unexisting
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${FILE} archive-staging/${NAME}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             APPEND)
+    endif()
 endmacro()
