@@ -1,6 +1,6 @@
 language: cpp
 sudo: false
-dist: trusty
+dist: xenial
 
 os:
   - linux
@@ -30,6 +30,7 @@ addons:
     packages:
     - ninja-build
     - qtbase5-dev
+    - gcc-5
 
 before_install:
   - |
@@ -37,11 +38,6 @@ before_install:
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       export QTDIR=/usr/lib/x86_64-linux-gnu/qt5
       export PATH="$QTDIR/bin:$PATH"
-      
-      # Install GCC
-      travis_retry sudo apt-get install -qq gcc-6 g++-6
-      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 90
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
     fi
     else
       brew update > /dev/null
