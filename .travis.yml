@@ -38,7 +38,6 @@ before_install:
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       export QTDIR=/usr/lib/x86_64-linux-gnu/qt5
       export PATH="$QTDIR/bin:$PATH"
-    fi
     else
       brew update > /dev/null
       brew tap homebrew/versions
