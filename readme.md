@@ -46,15 +46,15 @@ createlib(NAME <name> [STATIC|SHARED|<none>]
     PRIVATE_DEPS ${PRIVATE_DEPS}
     GENERATE_PACKAGE)
 ```
-NAME: name of the library
-NAMESPACE: Prefix added to the name of the library. (eg Qt5Core: Qt is the namespace, 5 if the major version and Core is the name of the library)
-LINKING: Can be explicit (static or shared). If omitted, it will depend on the value of the ```BUILD_SHARED_LIBS``` variable.
-VERSION: semver formatted version of the library. (eg. 1.0.0)
-SOURCES: List of source files to be compiled.
-PUBLIC_HEADERS: List of headers which can be included from the library.
-PRIVATE_HEADERS: List of headers which are private to the library and are not exposed.
-PUBLIC_DEPS: Dependencies of this library which are exposed to the users of this library
-PRIVATE_DEPS: Dependencies of this library which are not exposed to the users of this library
+NAME: name of the library  
+NAMESPACE: Prefix added to the name of the library. (eg Qt5Core: Qt is the namespace, 5 if the major version and Core is the name of the library)  
+LINKING: Can be explicit (static or shared). If omitted, it will depend on the value of the ```BUILD_SHARED_LIBS``` variable.  
+VERSION: semver formatted version of the library. (eg. 1.0.0)  
+SOURCES: List of source files to be compiled.  
+PUBLIC_HEADERS: List of headers which can be included from the library.  
+PRIVATE_HEADERS: List of headers which are private to the library and are not exposed.  
+PUBLIC_DEPS: Dependencies of this library which are exposed to the users of this library  
+PRIVATE_DEPS: Dependencies of this library which are not exposed to the users of this library  
 GENERATE_PACKAGE: (optional) If added, a relocatable cmake package is generated to allow the library to be used outside this cmake tree.
 
 ## Create an executable
@@ -67,10 +67,9 @@ createapp(NAME <name>
     HEADERS ${HEADERS}
     DEPS <dependencies>)
 ```
-NAME: name of the executable
-VERSION: semver formatted version of the executable. (eg. 1.0.0)
-CONSOLE: (optional) If added, the executable is build as a console applicatie. If omitted, it will be a GUI application (windows)
-SOURCES: List of source files to be compiled.
-HEADERS: List of headers to be used
-DEPS: List of dependent libraries of this application.
-
+NAME: name of the executable  
+VERSION: semver formatted version of the executable. (eg. 1.0.0)  
+CONSOLE: (optional) If added, the executable is build as a console applicatie. If omitted, it will be a GUI application (windows)  
+SOURCES: List of source files to be compiled.  
+HEADERS: List of headers to be used  
+DEPS: List of dependent libraries of this application.  
