@@ -1,6 +1,6 @@
 language: cpp
 sudo: false
-dist: trusty
+dist: xenial
 
 os:
   - linux
@@ -30,6 +30,7 @@ addons:
     packages:
     - ninja-build
     - qtbase5-dev
+    - gcc-5
 
 before_install:
   - |
