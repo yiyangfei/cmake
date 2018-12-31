@@ -34,7 +34,7 @@ install:
 
 build_script:
 # Clone examples: they are the code to test against.
-  - git clone -b feature/v2 https://github.com/cmakespark/examples.git examples
+  - git clone https://github.com/cmakespark/examples.git examples
   - set CMAKESPARK=C:/projects/cmake
   - mkdir installed
 
