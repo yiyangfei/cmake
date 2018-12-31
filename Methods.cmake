@@ -111,7 +111,9 @@ macro(createlib)
     endforeach( CONFIG CMAKE_CONFIGURATION_TYPES )
 
     if(MSVC)
-        install(FILES $<TARGET_PDB_FILE:${CREATELIB_NAME}> DESTINATION bin OPTIONAL)
+        if(${CREATELIB_SHARED} OR ${BUILD_SHARED_LIBS})
+            install(FILES $<TARGET_PDB_FILE:${CREATELIB_NAME}> DESTINATION bin OPTIONAL)
+        endif()
     endif()
 
     if(DEFINED CREATELIB_GENERATE_PACKAGE)
