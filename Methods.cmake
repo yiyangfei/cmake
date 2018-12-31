@@ -222,4 +222,11 @@ macro(createapp)
         endif()
     endif(${CREATEAPP_CONSOLE})
 
+    # Output Path for the non-config build (i.e. mingw)
+    set_target_properties(${CREATEAPP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin)
+    set_target_properties(${CREATEAPP_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY bin)
+    set_target_properties(${CREATEAPP_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY bin)
+
+    install(TARGETS ${CREATEAPP_NAME} DESTINATION bin)
+
 endmacro(createapp)
