@@ -111,7 +111,9 @@ macro(createlib)
     endforeach( CONFIG CMAKE_CONFIGURATION_TYPES )
 
     if(MSVC)
-        install(FILES $<TARGET_PDB_FILE:${CREATELIB_NAME}> DESTINATION bin OPTIONAL)
+        if(${CREATELIB_SHARED} OR ${BUILD_SHARED_LIBS})
+            install(FILES $<TARGET_PDB_FILE:${CREATELIB_NAME}> DESTINATION bin OPTIONAL)
+        endif()
     endif()
 
     if(DEFINED CREATELIB_GENERATE_PACKAGE)
@@ -219,5 +221,12 @@ macro(createapp)
             set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /subsystem:windows /entry:mainCRTStartup")
         endif()
     endif(${CREATEAPP_CONSOLE})
+
+    # Output Path for the non-config build (i.e. mingw)
+    set_target_properties(${CREATEAPP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin)
+    set_target_properties(${CREATEAPP_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY bin)
+    set_target_properties(${CREATEAPP_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY bin)
+
+    install(TARGETS ${CREATEAPP_NAME} DESTINATION bin)
 
 endmacro(createapp)
