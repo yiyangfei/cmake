@@ -1,5 +1,3 @@
-# Common cmake components
-
 This repository contains very generic cmake components which can be used across other cmake projects.
 
 # Including in your code.
@@ -73,3 +71,12 @@ CONSOLE: (optional) If added, the executable is build as a console applicatie. I
 SOURCES: List of source files to be compiled.  
 HEADERS: List of headers to be used  
 DEPS: List of dependent libraries of this application.  
+
+## More options
+This buildsys also allows to:
+- Run unit tests
+- Run valgrind on unit tests
+- Create archive of installed files
+- Create arbitrary archive
+- Run cppcheck
+- Run code coverage (lcov)
