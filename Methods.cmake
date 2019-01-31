@@ -111,7 +111,12 @@ macro(createlib)
     endforeach( CONFIG CMAKE_CONFIGURATION_TYPES )
 
     if(MSVC)
-        if(${CREATELIB_SHARED} OR ${BUILD_SHARED_LIBS})
+        set(ISSHAREDLIBRARY FALSE)
+        if (DEFINED BUILD_SHARED_LIBS)
+            set(ISSHAREDLIBRARY ${BUILD_SHARED_LIBS})
+        endif()
+
+        if(${CREATELIB_SHARED} OR ${ISSHAREDLIBRARY})
             install(FILES $<TARGET_PDB_FILE:${CREATELIB_NAME}> DESTINATION bin OPTIONAL)
         endif()
     endif()
