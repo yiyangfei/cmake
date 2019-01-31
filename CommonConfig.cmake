@@ -1,14 +1,10 @@
 cmake_minimum_required(VERSION 3.5.2 FATAL_ERROR)
 
-#################
-# Build options #
-#################
-
-if (NOT DEFINED BUILD_SHARED_LIBS)
-    option(BUILD_SHARED_LIBS "Build as shared library" ON)
+set(ISSHAREDLIBRARY FALSE)
+if (DEFINED BUILD_SHARED_LIBS)
+    set(ISSHAREDLIBRARY ${BUILD_SHARED_LIBS})
 endif()
-# When set to OFF, the library will be built as a static library
-if (${BUILD_SHARED_LIBS})
+if (${ISSHAREDLIBRARY})
     add_definitions(-D${PROJECT_NAME}_BUILD_SHARED_LIBS)
 endif()
 
