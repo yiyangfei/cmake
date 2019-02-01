@@ -73,6 +73,57 @@ HEADERS: List of headers to be used
 DEPS: List of dependent libraries of this application.  
 
 ## More options
+
+### Unit tests
+
+You can add unit tests (using QtTest) by adding this snippet to your CMakeLists.txt:
+
+```
+# CarTest
+add_qt_test(CarTest "tst_car.cpp")
+target_link_libraries(CarTest PUBLIC CC2::QComplexLib)
+
+```
+
+To execute all tests in the project, run this command:
+
+```
+cmake --build . --target test
+```
+
+### Code coverage
+
+As an extra, code coverage can be calculated by adding the COVERAGE option to the CMAKE command.
+```
+cmake -DCOVERAGE=ON path/to/source
+```
+
+There are 2 extra targets:
+- coverage-report: a textual report which produces an output per file.
+- coverage-html: a series of HTML files which produce a report per file showing each covered line.
+
+Example:
+```
+cmake --build . --target coverage-report
+[1/1] Running utility command for coverage-report
+Reading tracefile coverage.info
+                                |Lines       |Functions  |Branches    
+Filename                        |Rate     Num|Rate    Num|Rate     Num
+======================================================================
+[/home/frederik/cmakespark/examples/complexlib/]
+QComplexLib/src/qcar.cpp        | 100%     19|85.7%     7|    -      0
+QComplexLib/src/qcar.h          | 100%      1| 100%     2|    -      0
+QComplexLib/src/qcar_p.h        | 100%      1| 100%     1|    -      0
+complexlib/src/car.cpp          | 100%     16| 100%     6|    -      0
+======================================================================
+                          Total:| 100%     37|93.8%    16|    -      0
+Reading tracefile coverage.info
+Summary coverage rate:
+  lines......: 100.0% (37 of 37 lines)
+  functions..: 93.8% (15 of 16 functions)
+  branches...: no data found
+```
+
 This buildsys also allows to:
 - Run unit tests
 - Run valgrind on unit tests
