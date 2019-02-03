@@ -75,6 +75,12 @@ script:
     cmake --build . --target all
     cmake --build . --target install
 
+- |
+  # Create build artifact
+  mkdir /tmp/build
+  cd /tmp/build
+  cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ${TRAVIS_BUILD_DIR}
+  cmake --build . --target cmakespark
   - |
     # Build and install QSimpleApp
     mkdir /tmp/QSimpleApp-build
@@ -83,12 +89,12 @@ script:
     cmake --build . --target all
     cmake --build . --target install
 
-  - |
-    # Build and install complex lib
-    mkdir /tmp/complexlib-build
-    cd /tmp/complexlib-build
-    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=/tmp/installed -G Ninja ${HOME}/examples/complexlib
-    cmake --build . --target all
-    cmake --build . --target install
-    cmake --build . --target sdk
+deploy:
+  provider: releases
+  api_key:
+    secure: PuJwafNV/FQYr9vQpVnvabbObtR5pnuKlyfSFRLUydMIQZ+XWPHGyv9AUFAY4juR0KRPJzztWyOZKnJdITCU11BPx93PGOCC8/6swRsWW5PFTIgTnH3H71bXX2WIVqgUY3UjPkEQY3xOyr+92tP62coOulyyAVXwdpFdlYEM/bDsSIvmRrT/ux9uGh/2Hnkxe5Cm1yykjdzI8vhTRvRcZIYLBysO6s+7Av6DJpysY2QxH2ibZkYp3fBNbyTyrkn76VOs/Phwc+a7bufDCVwGF3OWqDHFsP81OitSlBow0F292uK+ToFWC26XtrGFEvvWr5nKhj+1ZRE8/YbOnIvbxssWHcO+l5t8zCrNP3gkQLgyHRcNhCca4LJUwFOd564DqP9D+Jdc4dEvOCnr+U/fEvRJViPDkHglifU2weL6eED9Ex6yHt3lInzlrEvcsgLnvIlyKE8rLq7iMiZIeSJG8uK5+Mkd2HNOijOZq17r6qyqKoctbmDvkP+YbomZZPxYUKLCaORJ+eOdPej34+3eU/yO5ZZDN387ign2lLTZjsNT/oupN4S7C/oOfARZa4j/a+aFZssZLtI7qvBJO1Wubt7RN8WEiY3XDFuGKKwSubLF6CcEv2D7F2vcNes0eUUzHcCRpAKI9Dme1lTX6Xa44eWtGoI6mZlRreuMhF6GTSM=
+  file: /tmp/build/cmakespark.zip
+  overwrite: true
+#  on:
+#    tags: true
 
