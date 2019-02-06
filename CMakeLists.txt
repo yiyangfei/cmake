@@ -3,6 +3,8 @@ project(cmakespark)
 
 add_subdirectory(src)
 
+add_subdirectory(tests)
+
 # Examples
 include(ExternalProject)
 
