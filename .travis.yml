@@ -12,7 +12,7 @@ compiler:
 
 env:
   global:
-    - 
+    - CTEST_OUTPUT_ON_FAILURE=1
 
   matrix:
     - CMAKE_BUILD_TYPE=Debug
@@ -48,46 +48,15 @@ before_install:
     fi
 
 install:
-# Clone examples: they are the code to test against.
-  - git clone https://github.com/cmakespark/examples.git ${HOME}/examples
-  - env
-  - export CMAKESPARK=${TRAVIS_BUILD_DIR}
-  - mkdir /tmp/installed
+  - |
+    # Run cmake
+    mkdir /tmp/build
+    cd /tmp/build
+    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ${TRAVIS_BUILD_DIR}
 
 script:
-  - |
-    # Build and install simplelib
-    mkdir /tmp/simplelib-build
-    cd /tmp/simplelib-build
-    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=/tmp/installed -G Ninja ${HOME}/examples/simplelib
-    cmake --build . --target all
-    cmake --build . --target install
-    cmake --build . --target sdk
-  - |
-    # Relocate library
-    cp -r /tmp/installed /tmp/relocated
- 
-  - |
-    # Build and install Simpleapp
-    mkdir /tmp/simpleapp-build
-    cd /tmp/simpleapp-build
-    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=/tmp/installed -DCC1simplelib_DIR=/tmp/relocated/lib/cmake/CC1simplelib -G Ninja ${HOME}/examples/simpleapp
-    cmake --build . --target all
-    cmake --build . --target install
-
-- |
-  # Create build artifact
-  mkdir /tmp/build
-  cd /tmp/build
-  cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ${TRAVIS_BUILD_DIR}
-  cmake --build . --target cmakespark
-  - |
-    # Build and install QSimpleApp
-    mkdir /tmp/QSimpleApp-build
-    cd /tmp/QSimpleApp-build
-    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=/tmp/installed -DCC1simplelib_DIR=/tmp/relocated/lib/cmake/CC1simplelib -G Ninja ${HOME}/examples/QSimpleApp/
-    cmake --build . --target all
-    cmake --build . --target install
+  - cmake --build . --target cmakespark
+  - cmake --build . --target runtests
 
 deploy:
   provider: releases
@@ -95,6 +64,6 @@ deploy:
     secure: PuJwafNV/FQYr9vQpVnvabbObtR5pnuKlyfSFRLUydMIQZ+XWPHGyv9AUFAY4juR0KRPJzztWyOZKnJdITCU11BPx93PGOCC8/6swRsWW5PFTIgTnH3H71bXX2WIVqgUY3UjPkEQY3xOyr+92tP62coOulyyAVXwdpFdlYEM/bDsSIvmRrT/ux9uGh/2Hnkxe5Cm1yykjdzI8vhTRvRcZIYLBysO6s+7Av6DJpysY2QxH2ibZkYp3fBNbyTyrkn76VOs/Phwc+a7bufDCVwGF3OWqDHFsP81OitSlBow0F292uK+ToFWC26XtrGFEvvWr5nKhj+1ZRE8/YbOnIvbxssWHcO+l5t8zCrNP3gkQLgyHRcNhCca4LJUwFOd564DqP9D+Jdc4dEvOCnr+U/fEvRJViPDkHglifU2weL6eED9Ex6yHt3lInzlrEvcsgLnvIlyKE8rLq7iMiZIeSJG8uK5+Mkd2HNOijOZq17r6qyqKoctbmDvkP+YbomZZPxYUKLCaORJ+eOdPej34+3eU/yO5ZZDN387ign2lLTZjsNT/oupN4S7C/oOfARZa4j/a+aFZssZLtI7qvBJO1Wubt7RN8WEiY3XDFuGKKwSubLF6CcEv2D7F2vcNes0eUUzHcCRpAKI9Dme1lTX6Xa44eWtGoI6mZlRreuMhF6GTSM=
   file: /tmp/build/cmakespark.zip
   overwrite: true
-#  on:
-#    tags: true
+  on:
+    tags: true
 
