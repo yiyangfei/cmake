@@ -1,11 +1,19 @@
+find_program(VALGRIND valgrind)
+if(VALGRIND)
+    message(STATUS "Unit tests will be profiled on memory leaks using valgrind.")
+endif()
+
 macro(add_qt_test TEST_NAME SRCS)
     find_package(Qt5Test REQUIRED)
 
     add_executable(${TEST_NAME} ${SRCS})
-
-    add_test(NAME ${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
-
     target_link_libraries(${TEST_NAME} PUBLIC Qt5::Test)
+
+    if(DEFINED VALGRIND)
+        add_test(NAME ${TEST_NAME} COMMAND ${VALGRIND} --error-exitcode=1 --leak-check=full ${VALGRIND_OPTS} $<TARGET_FILE:${TEST_NAME}>)
+    else()
+        add_test(NAME ${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
+    endif()
 endmacro()
 
 option(PRIVATE_TESTS_ENABLED "Enable private tests" ON)
