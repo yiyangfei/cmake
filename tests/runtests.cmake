@@ -5,6 +5,10 @@ execute_process(
     OUTPUT_VARIABLE OUTPUT
     ERROR_VARIABLE ERROR)
 
-if(NOT ${RESULT} EQUAL 1)
-    message(FATAL_ERROR "Valgrind should find an memory leak")
+message(STATUS ${OUTPUT})
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    if(NOT ${RESULT} EQUAL 1)
+        message(FATAL_ERROR "Valgrind should find an memory leak")
+    endif()
 endif()
