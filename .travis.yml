@@ -57,6 +57,7 @@ install:
 
 script:
   - cmake --build . --target cmakespark
+  - cmake --build . --target all
   - cmake --build . --target runtests
 
 deploy:
