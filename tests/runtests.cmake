@@ -1,3 +1,5 @@
+find_program(VALGRIND valgrind)
+
 execute_process(
     COMMAND ${CMAKE_COMMAND} --build . --target test
     WORKING_DIRECTORY ${BASEDIR}
@@ -7,8 +9,15 @@ execute_process(
 
 message(STATUS ${OUTPUT})
 
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    if(NOT ${RESULT} EQUAL 1)
-        message(FATAL_ERROR "Valgrind should find an memory leak. Return code was: ${RESULT}")
+find_program(VALGRIND valgrind)
+if(VALGRIND)
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        if(${RESULT} EQUAL 0)
+            message(FATAL_ERROR "Valgrind should find an memory leak.")
+        endif()
+    endif()
+else()
+    if(NOT ${RESULT} EQUAL 0)
+        message(FATAL_ERROR "Unit tests should pass.")
     endif()
 endif()
