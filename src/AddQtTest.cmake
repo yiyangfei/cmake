@@ -1,6 +1,6 @@
 find_program(VALGRIND valgrind)
 if(VALGRIND)
-    message(STATUS "Unit tests will be profiled on memory leaks using valgrind.")
+    message(STATUS "Unit tests will be profiled on memory leaks using valgrind: ${VALGRIND}")
 endif()
 
 macro(add_qt_test TEST_NAME SRCS)
@@ -9,7 +9,7 @@ macro(add_qt_test TEST_NAME SRCS)
     add_executable(${TEST_NAME} ${SRCS})
     target_link_libraries(${TEST_NAME} PUBLIC Qt5::Test)
 
-    if(DEFINED VALGRIND)
+    if(VALGRIND)
         add_test(NAME ${TEST_NAME} COMMAND ${VALGRIND} --error-exitcode=1 --leak-check=full ${VALGRIND_OPTS} $<TARGET_FILE:${TEST_NAME}>)
     else()
         add_test(NAME ${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
