@@ -64,9 +64,15 @@ if(CODE_COVERAGE)
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/coverage)
 
+    if(WIN32)
+        set(LCOV_REDIRECT ">NUL")
+    else()
+        set(LCOV_REDIRECT "2>/dev/null")
+    endif()
+
     add_custom_target("coverage-report")
     add_custom_command(TARGET "coverage-report"
-        COMMAND ${LCOV_EXECUTABLE} --quiet --capture --directory . --base-directory ${CMAKE_SOURCE_DIR} --no-external -o coverage.info
+        COMMAND ${LCOV_EXECUTABLE} --quiet --capture --directory . --base-directory ${CMAKE_SOURCE_DIR} --no-external -o coverage.info ${LCOV_REDIRECT}
         COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info ${CODE_COVERAGE_EXCLUDES} -o coverage.info
         COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info \*test_\* -o coverage.info
         COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info \*catch.hpp\* -o coverage.info
@@ -74,8 +80,7 @@ if(CODE_COVERAGE)
         COMMAND ${LCOV_EXECUTABLE} --list coverage.info
         COMMAND ${LCOV_EXECUTABLE} --summary coverage.info
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMENT "Create code coverage report"
-        VERBATIM)
+        COMMENT "Create code coverage report")
 
     add_custom_target("coverage-html" DEPENDS "coverage-report")
     add_custom_command(TARGET "coverage-html"
