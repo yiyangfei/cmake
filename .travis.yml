@@ -53,7 +53,7 @@ install:
     # Run cmake
     mkdir /tmp/build
     cd /tmp/build
-    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ${TRAVIS_BUILD_DIR}
+    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=/tmp/ ${TRAVIS_BUILD_DIR}
 
 script:
   - cmake --build . --target cmakespark
