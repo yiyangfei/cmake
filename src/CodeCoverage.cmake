@@ -70,21 +70,23 @@ if(CODE_COVERAGE)
         set(LCOV_REDIRECT "2>/dev/null")
     endif()
 
+    set(COVERAGE_FILE ${CMAKE_BINARY_DIR}/coverage.info)
+
     add_custom_target("coverage-report")
     add_custom_command(TARGET "coverage-report"
-        COMMAND ${LCOV_EXECUTABLE} --quiet --capture --directory . --base-directory ${CMAKE_SOURCE_DIR} --no-external -o coverage.info ${LCOV_REDIRECT}
-        COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info ${CODE_COVERAGE_EXCLUDES} -o coverage.info
-        COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info \*test_\* -o coverage.info
-        COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info \*catch.hpp\* -o coverage.info
-        COMMAND ${LCOV_EXECUTABLE} --quiet --remove coverage.info \*contract.cpp\* -o coverage.info
-        COMMAND ${LCOV_EXECUTABLE} --list coverage.info
-        COMMAND ${LCOV_EXECUTABLE} --summary coverage.info
+        COMMAND ${LCOV_EXECUTABLE} --quiet --capture --directory . --base-directory ${CMAKE_SOURCE_DIR} --no-external -o ${COVERAGE_FILE} ${LCOV_REDIRECT}
+        COMMAND ${LCOV_EXECUTABLE} --quiet --remove ${COVERAGE_FILE} ${CODE_COVERAGE_EXCLUDES} -o ${COVERAGE_FILE}
+        COMMAND ${LCOV_EXECUTABLE} --quiet --remove ${COVERAGE_FILE} \*test_\* -o ${COVERAGE_FILE}
+        COMMAND ${LCOV_EXECUTABLE} --quiet --remove ${COVERAGE_FILE} \*catch.hpp\* -o ${COVERAGE_FILE}
+        COMMAND ${LCOV_EXECUTABLE} --quiet --remove ${COVERAGE_FILE} \*contract.cpp\* -o ${COVERAGE_FILE}
+        COMMAND ${LCOV_EXECUTABLE} --list ${COVERAGE_FILE}
+        COMMAND ${LCOV_EXECUTABLE} --summary ${COVERAGE_FILE}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Create code coverage report")
 
     add_custom_target("coverage-html" DEPENDS "coverage-report")
     add_custom_command(TARGET "coverage-html"
-        COMMAND ${GENHTML_EXECUTABLE} coverage.info --show-details -o coverage
+        COMMAND ${GENHTML_EXECUTABLE} ${COVERAGE_FILE} --show-details -o coverage
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Create code coverage html report"
         VERBATIM)
