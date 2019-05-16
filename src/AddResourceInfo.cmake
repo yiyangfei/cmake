@@ -46,8 +46,19 @@ if(WIN32 AND NOT UNIX AND ${IS_APPLICABLE_RESOURCE})
         set(FILEATTR_ORIGINAL_NAME "${PROJECT}.exe ${GIT_COMMIT_HASH}")
     endif()
     
-    # The RC file needs explicit variables (as defined in set() statements), so we can't reference the macro parameters. Set these as independent
-    # variables so that they can work in the RC file.
+    # The RC file needs explicit variables (as defined in set() statements), because we can't reference macro parameters.
+    # Set these as independent variables so that replacement will happen upon calling configure_file()
+    if(${CMAKE_PROJECT_NAME}_VERSION_STRING)
+        set(PRODUCT_VER_MAJOR ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR})
+        set(PRODUCT_VER_MINOR ${${CMAKE_PROJECT_NAME}_VERSION_MINOR})
+        set(PRODUCT_VER_PATCH ${${CMAKE_PROJECT_NAME}_VERSION_PATCH})
+        set(PRODUCT_VER_EXTRA 0) # TODO: semantic versioning defines additional labels (string), DLL only supports numbers
+    else()
+        set(PRODUCT_VER_MAJOR ${FILE_VER_MAJOR})
+        set(PRODUCT_VER_MINOR ${FILE_VER_MINOR})
+        set(PRODUCT_VER_PATCH ${FILE_VER_PATCH})
+        set(PRODUCT_VER_EXTRA 0)
+    endif()
     set(FILEATTR_VER_MAJOR ${FILE_VER_MAJOR})
     set(FILEATTR_VER_MINOR ${FILE_VER_MINOR})
     set(FILEATTR_VER_PATCH ${FILE_VER_PATCH})
