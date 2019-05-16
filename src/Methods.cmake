@@ -112,7 +112,7 @@ macro(createlib)
 
     if(MSVC)
         set(ISSHAREDLIBRARY FALSE)
-        if (DEFINED BUILD_SHARED_LIBS)
+        if (DEFINED BUILD_SHARED_LIBS AND NOT DEFINED LINKING)
             set(ISSHAREDLIBRARY ${BUILD_SHARED_LIBS})
         endif()
 
