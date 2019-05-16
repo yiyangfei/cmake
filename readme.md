@@ -131,3 +131,23 @@ This buildsys also allows to:
 - Create arbitrary archive
 - Run cppcheck
 - Run code coverage (lcov)
+
+
+## Retrieve project version git
+
+This section explains how to read out the semantic version (https://semver.org/spec/v2.0.0.html) from a git commit.
+It will retrieve the latest git tag and adds the commit hash.
+
+To enable, add the following snippet to your CMakeLists.txt:
+
+```cmake
+find_package(Git REQUIRED)
+set(VERSION_UPDATE_FROM_GIT TRUE)
+
+include(GetVersionFromGitTag)
+
+```
+Additionally, this will write a file `VERSION` in the `CMakeLists.txt`s directory.
+
+In case the git is not found on the current computer, it will read the version from VERSION.
+Note, the early first build requires you to run the `find_package` command to create the `VERSION` file.
