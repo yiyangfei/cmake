@@ -149,5 +149,19 @@ include(GetVersionFromGitTag)
 ```
 Additionally, this will write a file `VERSION` in the `CMakeLists.txt`s directory.
 
-In case the git is not found on the current computer, it will read the version from VERSION.
-Note, the early first build requires you to run the `find_package` command to create the `VERSION` file.
+In case the git executable is not found on the current computer, it will read the version from the `VERSION` file.
+Note that the early first build requires you to run the `find_package` command to create this file.
+
+The label string and its version (e.g. "RC.2" in v2.3.1-RC.2+21.ef12c8) are encoded as the fourth number of the version.
+This number is equal to the sum of
+- the encoded string (from the example: RC) cypher
+    - pre or pre-alpha: 1000 (only for development)
+    - alpha: 2000 (first software testing phase)
+    - beta: 3000 (feature complete, possible bugs)
+    - rc: 9000 (going silver, best beta release, could become final release)
+- its version number (from the example: 2).
+
+An unknown string will result in 5000 and is not recommended.
+More info over the possible strings can be found here https://en.wikipedia.org/wiki/Software_release_life_cycle#Release_candidate.
+
+For example, the semantic version 2.3.1-RC.2 will be converted to `2.3.1.2002`.
