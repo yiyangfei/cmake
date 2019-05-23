@@ -157,8 +157,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Remove /EHsc since /EHsc- will be added (otherwise we get a warning about replacing /EHsc with /EHsc-)
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
-    # Remove /GR since /GR- will be added (otherwise we get a warning about replacing /GR with /GR-)
-    string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    if (NOT ${ALLOW_RTTI})
+        # Remove /GR since /GR- will be added (otherwise we get a warning about replacing /GR with /GR-)
+        string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    endif()
 
     set(COMPILER_FLAGS
                         "/W4"
@@ -183,8 +185,11 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
                         "/wd4718"   # Workaround for https://bugreports.qt.io/browse/QTBUG-54089
                         "/nologo"
                         "/EHsc-"    # disable exceptions
-                        "/GR-"      # disable RTTI
     )
+
+    if (NOT ${ALLOW_RTTI})
+        list(APPEND COMPILER_FLAGS "/GR-")  # disable RTTI
+    endif()
 endif()
 
 # Allow workarounds for specific frameworks 
