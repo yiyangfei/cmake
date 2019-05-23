@@ -15,7 +15,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
                         "-Wall"                             # turn on all warnings
                         "-pedantic"
                         "-Wextra"
-                        "-fno-rtti"                         # disable runtime type information
                         "-ffor-scope"
                         "-fuse-cxa-atexit"
                         "-fno-default-inline"
@@ -81,7 +80,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
                         "-Wpedantic"
                         "-Wextra"
                         "-Weffc++"                          # turn on warnings from Effective C++ handbook
-                        "-fno-rtti"                         # disable runtime type information
                         "-ffor-scope"
                         "-fuse-cxa-atexit"
                         "-fvisibility=hidden"               # do not export symbols by default
@@ -196,6 +194,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     endif()
     if (NOT ${ALLOW_EXCEPTIONS})
         list(APPEND COMPILER_FLAGS "-fno-exceptions")
+    endif()
+
+    if (NOT DEFINED ALLOW_RTTI)
+        option(ALLOW_RTTI "Allow runtime type information (RTTI)" OFF)
+    endif()
+    if (NOT ${ALLOW_RTTI})
+        list(APPEND COMPILER_FLAGS "-fno-rtti")  # disable runtime type information
     endif()
 endif()
 
