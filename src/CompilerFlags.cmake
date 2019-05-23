@@ -73,12 +73,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         set(COMPILER_FLAGS "${COMPILER_FLAGS}" "-Wl,--enable-stdcall-fixup")
     endif()
 
-    if (NOT DEFINED ALLOW_EXCEPTIONS)
-        option(ALLOW_EXCEPTIONS "Allow exceptions" OFF)
-    endif()
-    if (NOT ${ALLOW_EXCEPTIONS})
-        set(COMPILER_FLAGS "${COMPILER_FLAGS}" "-fno-exceptions")
-    endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(COMPILER_FLAGS
                         "-stdlib=libc++"
@@ -158,13 +152,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #                       "-Wzero-as-null-pointer-constant"   # not supported by Clang
     )
 
-    if (NOT DEFINED ALLOW_EXCEPTIONS)
-        option(ALLOW_EXCEPTIONS "Allow exceptions" OFF)
-    endif()
-    if (NOT ${ALLOW_EXCEPTIONS})
-        set(COMPILER_FLAGS "${COMPILER_FLAGS}" "-fno-exceptions")
-    endif()
-
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Remove /W3 since /W4 will be added (otherwise we get a warning about replacing /W3 with /W4)
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -200,6 +187,16 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
                         "/EHsc-"    # disable exceptions
                         "/GR-"      # disable RTTI
     )
+endif()
+
+# Allow workarounds for specific frameworks 
+if(CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+    if (NOT DEFINED ALLOW_EXCEPTIONS)
+        option(ALLOW_EXCEPTIONS "Allow exceptions" OFF)
+    endif()
+    if (NOT ${ALLOW_EXCEPTIONS})
+        list(APPEND COMPILER_FLAGS "-fno-exceptions")
+    endif()
 endif()
 
 string(REPLACE ";" " " COMPILER_FLAGS_STRING "${COMPILER_FLAGS}")
