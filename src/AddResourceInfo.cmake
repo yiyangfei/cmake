@@ -6,6 +6,61 @@
 #top level scope at include time.
 set(THIS_FILE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
+#This macro calculates the encoded number for the 'tweak' verson string from a semantic version label
+#The tweak version string is defined by a label string and its version (e.g. "RC.2" in v2.3.1-RC.2+21.ef12c8)
+#The strings are encoded as 1 cypher:
+#  - pre or pre-alpha: 1
+#  - alpha: 7
+#  - beta: 8
+#  - rc: 9
+#Otherwise the cypher is 5, and a warning is sent
+#
+#The encoded number is equal to the `encoded string cypher * 1000 + label version number`
+#
+#Parameters:
+#TWEAK_VERSION_STRING[in] - case insensitive tweak version string (e.g. RC.2, alpha.193, beta.23)
+#ENCODED_NUMBER[out] - the calculated encoded number with maximum of 4 digits
+macro(encode_semantic_version_label TWEAK_VERSION_STRING ENCODED_NUMBER)
+    string(REGEX MATCHALL "[-a-zA-Z]+|[0-9]+" TWEAK_VERSION_STRING_LIST ${TWEAK_VERSION_STRING})
+    list(GET TWEAK_VERSION_STRING_LIST 0 LABEL_STR)
+    list(GET TWEAK_VERSION_STRING_LIST 1 LABEL_VERSION)
+
+    if(LABEL_STR)
+        string(TOLOWER ${LABEL_STR} ${LABEL_STR})
+
+        string(COMPARE EQUAL "pre" ${LABEL_STR} LABEL_STR_PRE)
+        string(COMPARE EQUAL "pre-alpha" ${LABEL_STR} LABEL_STR_PRE_ALPHA)
+        string(COMPARE EQUAL "alpha" ${LABEL_STR} LABEL_STR_ALPHA)
+        string(COMPARE EQUAL "beta" ${LABEL_STR} LABEL_STR_BETA)
+        string(COMPARE EQUAL "rc" ${LABEL_STR} LABEL_STR_RC)
+
+        if(LABEL_STR_PRE OR LABEL_STR_PRE_ALPHA)
+            set(SUM 1)
+        elseif(LABEL_STR_ALPHA)
+            set(SUM 2)
+        elseif(LABEL_STR_BETA)
+            set(SUM 3)
+        elseif(LABEL_STR_RC)
+            set(SUM 9)
+        else()
+            message(WARNING "Unknown tweak version label string ${LABEL_STR},
+                             either rename the version or process this new label.")
+            set(SUM 5)  # set SUM to mid value, to avoid burning
+        endif()
+    else()
+        set(SUM 0)
+    endif()
+
+    if(NOT LABEL_VERSION)
+        set(LABEL_VERSION 0)
+    endif()
+
+    MATH(EXPR SUM "${SUM}*1000+${LABEL_VERSION}")
+
+    # Set output parameter
+    set(${ENCODED_NUMBER} ${SUM})
+endmacro()
+
 #This macro (currently Windows-only) creates a .RC file that holds all of the application/library's file details. This RC
 #file is then appended to the source list for the target.
 #
@@ -46,8 +101,20 @@ if(WIN32 AND NOT UNIX AND ${IS_APPLICABLE_RESOURCE})
         set(FILEATTR_ORIGINAL_NAME "${PROJECT}.exe ${GIT_COMMIT_HASH}")
     endif()
     
-    # The RC file needs explicit variables (as defined in set() statements), so we can't reference the macro parameters. Set these as independent
-    # variables so that they can work in the RC file.
+    # The RC file needs explicit variables (as defined in set() statements), because we can't reference macro parameters.
+    # Set these as independent variables so that replacement will happen upon calling configure_file()
+    if(${CMAKE_PROJECT_NAME}_VERSION_STRING)
+        set(PRODUCT_VER_MAJOR ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR})
+        set(PRODUCT_VER_MINOR ${${CMAKE_PROJECT_NAME}_VERSION_MINOR})
+        set(PRODUCT_VER_PATCH ${${CMAKE_PROJECT_NAME}_VERSION_PATCH})
+
+        encode_semantic_version_label(${${CMAKE_PROJECT_NAME}_VERSION_TWEAK} PRODUCT_VER_EXTRA)
+    else()
+        set(PRODUCT_VER_MAJOR ${FILE_VER_MAJOR})
+        set(PRODUCT_VER_MINOR ${FILE_VER_MINOR})
+        set(PRODUCT_VER_PATCH ${FILE_VER_PATCH})
+        set(PRODUCT_VER_EXTRA 0)
+    endif()
     set(FILEATTR_VER_MAJOR ${FILE_VER_MAJOR})
     set(FILEATTR_VER_MINOR ${FILE_VER_MINOR})
     set(FILEATTR_VER_PATCH ${FILE_VER_PATCH})
