@@ -221,3 +221,19 @@ endif()
 if (NOT WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif (NOT WIN32)
+
+# Adds reverted compiler flags for compiling with FakeIt to the specified target
+#   _TARGET       - The target to revert compile flag for
+# Note: RTTI needs to be enabled using ENABLE_RTTI before this file is included
+macro(target_uses_fakeit _TARGET)
+    if(NOT MSVC)
+        set(REVERT_COMPILER_OPTIONS
+            -fexceptions
+            -Wno-effc++
+            -Wno-non-virtual-dtor
+            -Wno-old-style-cast
+            -Wno-sign-conversion
+        )
+        target_compile_options(${_TARGET} PRIVATE "${REVERT_COMPILER_OPTIONS}")
+    endif()
+endmacro()
