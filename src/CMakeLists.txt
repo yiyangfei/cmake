@@ -12,6 +12,7 @@ set(SOURCES
     Doxygen.cmake
     FindGcovr.cmake
     GetGitRevisionDescription.cmake.in
+    GetVersionFromGitTag.cmake
     Package.cmake
     Translations.cmake
     CommonConfig.cmake
