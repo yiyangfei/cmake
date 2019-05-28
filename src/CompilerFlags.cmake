@@ -236,4 +236,13 @@ macro(target_uses_fakeit _TARGET)
         )
         target_compile_options(${_TARGET} PRIVATE "${REVERT_COMPILER_OPTIONS}")
     endif()
+    # Additions for Clang only
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(REVERT_COMPILER_OPTIONS
+            -Wno-shorten-64-to-32
+            -Wno-deprecated
+            -Wno-zero-length-array
+        )
+        target_compile_options(${_TARGET} PRIVATE "${REVERT_COMPILER_OPTIONS}")
+    endif()
 endmacro()
