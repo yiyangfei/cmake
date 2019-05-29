@@ -224,10 +224,11 @@ endif (NOT WIN32)
 
 # Adds reverted compiler flags for compiling with FakeIt to the specified target
 #   _TARGET       - The target to revert compile flag for
-# Note: RTTI needs to be enabled using ENABLE_RTTI before this file is included
+# Note: RTTI needs to be enabled using ENABLE_RTTI (for MSVC only) before this file is included
 macro(target_uses_fakeit _TARGET)
     if(NOT MSVC)
         set(REVERT_COMPILER_OPTIONS
+            -frtti
             -fexceptions
             -Wno-effc++
             -Wno-non-virtual-dtor
