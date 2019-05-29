@@ -13,8 +13,6 @@ macro(add_qt_test TEST_NAME SRCS)
     else()
         add_test(NAME ${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
     endif()
-
-    target_uses_fakeit(${TEST_NAME})
 endmacro()
 
 option(PRIVATE_TESTS_ENABLED "Enable private tests" ON)
