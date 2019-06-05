@@ -52,6 +52,7 @@ if(NOT CODE_COVERAGE_NO_DEFAULT_EXCLUDES)
         "*qrc_*"
         "ui_*.h"
         "catch.hpp"
+        "fakeit.hpp"
     )
 endif()
 
