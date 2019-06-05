@@ -15,7 +15,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
                         "-Wall"                             # turn on all warnings
                         "-pedantic"
                         "-Wextra"
-                        "-fno-rtti"                         # disable runtime type information
                         "-ffor-scope"
                         "-fuse-cxa-atexit"
                         "-fno-default-inline"
@@ -73,12 +72,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         set(COMPILER_FLAGS "${COMPILER_FLAGS}" "-Wl,--enable-stdcall-fixup")
     endif()
 
-    if (NOT DEFINED ALLOW_EXCEPTIONS)
-        option(ALLOW_EXCEPTIONS "Allow exceptions" OFF)
-    endif()
-    if (NOT ${ALLOW_EXCEPTIONS})
-        set(COMPILER_FLAGS "${COMPILER_FLAGS}" "-fno-exceptions")
-    endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(COMPILER_FLAGS
                         "-stdlib=libc++"
@@ -87,7 +80,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
                         "-Wpedantic"
                         "-Wextra"
                         "-Weffc++"                          # turn on warnings from Effective C++ handbook
-                        "-fno-rtti"                         # disable runtime type information
                         "-ffor-scope"
                         "-fuse-cxa-atexit"
                         "-fvisibility=hidden"               # do not export symbols by default
@@ -158,13 +150,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #                       "-Wzero-as-null-pointer-constant"   # not supported by Clang
     )
 
-    if (NOT DEFINED ALLOW_EXCEPTIONS)
-        option(ALLOW_EXCEPTIONS "Allow exceptions" OFF)
-    endif()
-    if (NOT ${ALLOW_EXCEPTIONS})
-        set(COMPILER_FLAGS "${COMPILER_FLAGS}" "-fno-exceptions")
-    endif()
-
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Remove /W3 since /W4 will be added (otherwise we get a warning about replacing /W3 with /W4)
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -172,8 +157,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Remove /EHsc since /EHsc- will be added (otherwise we get a warning about replacing /EHsc with /EHsc-)
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
-    # Remove /GR since /GR- will be added (otherwise we get a warning about replacing /GR with /GR-)
-    string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    if (NOT ${ALLOW_RTTI})
+        # Remove /GR since /GR- will be added (otherwise we get a warning about replacing /GR with /GR-)
+        string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    endif()
 
     set(COMPILER_FLAGS
                         "/W4"
@@ -198,8 +185,28 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
                         "/wd4718"   # Workaround for https://bugreports.qt.io/browse/QTBUG-54089
                         "/nologo"
                         "/EHsc-"    # disable exceptions
-                        "/GR-"      # disable RTTI
     )
+
+    if (NOT ${ALLOW_RTTI})
+        list(APPEND COMPILER_FLAGS "/GR-")  # disable RTTI
+    endif()
+endif()
+
+# Allow workarounds for specific frameworks 
+if(CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+    if (NOT DEFINED ALLOW_EXCEPTIONS)
+        option(ALLOW_EXCEPTIONS "Allow exceptions" OFF)
+    endif()
+    if (NOT ${ALLOW_EXCEPTIONS})
+        list(APPEND COMPILER_FLAGS "-fno-exceptions")
+    endif()
+
+    if (NOT DEFINED ALLOW_RTTI)
+        option(ALLOW_RTTI "Allow runtime type information (RTTI)" OFF)
+    endif()
+    if (NOT ${ALLOW_RTTI})
+        list(APPEND COMPILER_FLAGS "-fno-rtti")  # disable runtime type information
+    endif()
 endif()
 
 string(REPLACE ";" " " COMPILER_FLAGS_STRING "${COMPILER_FLAGS}")
@@ -214,3 +221,29 @@ endif()
 if (NOT WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif (NOT WIN32)
+
+# Adds reverted compiler flags for compiling with FakeIt to the specified target
+#   _TARGET       - The target to revert compile flag for
+# Note: RTTI needs to be enabled using ENABLE_RTTI (for MSVC only) before this file is included
+macro(target_uses_fakeit _TARGET)
+    if(NOT MSVC)
+        set(REVERT_COMPILER_OPTIONS
+            -frtti
+            -fexceptions
+            -Wno-effc++
+            -Wno-non-virtual-dtor
+            -Wno-old-style-cast
+            -Wno-sign-conversion
+        )
+        target_compile_options(${_TARGET} PRIVATE "${REVERT_COMPILER_OPTIONS}")
+    endif()
+    # Additions for Clang only
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(REVERT_COMPILER_OPTIONS
+            -Wno-shorten-64-to-32
+            -Wno-deprecated
+            -Wno-zero-length-array
+        )
+        target_compile_options(${_TARGET} PRIVATE "${REVERT_COMPILER_OPTIONS}")
+    endif()
+endmacro()

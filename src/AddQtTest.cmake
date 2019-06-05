@@ -5,7 +5,6 @@ endif()
 
 macro(add_qt_test TEST_NAME SRCS)
     find_package(Qt5Test REQUIRED)
-
     add_executable(${TEST_NAME} ${SRCS})
     target_link_libraries(${TEST_NAME} PUBLIC Qt5::Test)
 
